@@ -1,4 +1,3 @@
-
 ;(function(){
 
   /**
@@ -18,6 +17,12 @@
    */
 
   var running;
+
+  /**
+   * To work properly with the URL
+   * history.location generated polyfill in https://github.com/devote/HTML5-History-API
+   */
+  var location = history.location || window.location;
 
   /**
    * Register `path` with callback `fn()`,
@@ -93,7 +98,7 @@
     running = true;
     if (false === options.dispatch) dispatch = false;
     if (false !== options.popstate) addEvent(window, 'popstate', onpopstate);
-    if (false !== options.click) addEvent(document.body, 'click', onclick);
+    if (false !== options.click) addEvent(document, 'click', onclick);
     if (!dispatch) return;
     var url = location.pathname + location.search + location.hash;
     page.replace(url, null, true, dispatch);
@@ -107,8 +112,8 @@
 
   page.stop = function(){
     running = false;
-    removeEvent('click', onclick, false);
-    removeEvent('popstate', onpopstate, false);
+    removeEvent(document, 'click', onclick);
+    removeEvent(window, 'popstate', onpopstate);
   };
 
   /**
@@ -186,8 +191,7 @@
    */
 
   function unhandled(ctx) {
-    var current = window.location.pathname + window.location.search;
-    if (current == ctx.canonicalPath) return;
+    if (location.pathname + location.search == ctx.canonicalPath) return;
     page.stop();
     ctx.unhandled = true;
     window.location = ctx.canonicalPath;
@@ -456,18 +460,20 @@
    * Basic cross browser event code
    */
 
-   function addEvent( obj, type, fn ) {
-     if ( obj.addEventListener ) {
-       obj.addEventListener( type, fn, false );
-     } else
-       obj.attachEvent( 'on'+type, fn );
+   function addEvent(obj, type, fn) {
+     if (obj.addEventListener) {
+       obj.addEventListener(type, fn, false);
+     } else {
+       obj.attachEvent('on' + type, fn);
+     }
    }
-   
-   function removeEvent( obj, type, fn ) {
-     if ( obj.removeEventListener ) {
-       obj.removeEventListener( type, fn, false );
-     } else
-       obj.detachEvent( 'on'+type, fn );
+
+   function removeEvent(obj, type, fn) {
+     if (obj.removeEventListener) {
+       obj.removeEventListener(type, fn, false);
+     } else {
+       obj.detachEvent('on' + type, fn);
+     }
    }
 
   /**
