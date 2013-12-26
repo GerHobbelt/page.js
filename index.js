@@ -279,7 +279,6 @@
   function Route(path, options) {
     options = options || {};
     this.path = path;
-    this.method = 'GET';
     this.regexp = pathtoRegexp(path
       , this.keys = []
       , options.sensitive
@@ -304,7 +303,7 @@
   Route.prototype.middleware = function(fn){
     var self = this;
     return function(ctx, next){
-      if (self.match(ctx.path, ctx.params)) return fn(ctx, next);
+      if (self.match(ctx)) return fn(ctx, next);
       next();
     };
   };
@@ -319,13 +318,17 @@
    * @api private
    */
 
-  Route.prototype.match = function(path, params){
-    var keys = this.keys
+  Route.prototype.match = function(ctx) {
+    var keys = this.keys,
+      , path = ctx.path,
+      , params = ctx.params,
       , qsIndex = path.indexOf('?')
       , pathname = ~qsIndex ? path.slice(0, qsIndex) : path
       , m = this.regexp.exec(decodeURIComponent(pathname));
 
     if (!m) return false;
+
+    ctx.route_path = this.path;
 
     for (var i = 1, len = m.length; i < len; ++i) {
       var key = keys[i - 1];
