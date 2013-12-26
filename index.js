@@ -319,9 +319,9 @@
    */
 
   Route.prototype.match = function(ctx) {
-    var keys = this.keys,
-      , path = ctx.path,
-      , params = ctx.params,
+    var keys = this.keys
+      , path = ctx.path
+      , params = ctx.params
       , qsIndex = path.indexOf('?')
       , pathname = ~qsIndex ? path.slice(0, qsIndex) : path
       , m = this.regexp.exec(decodeURIComponent(pathname));
