@@ -193,11 +193,12 @@
 
   function Context(path, state) {
     if ('/' == path[0] && 0 != path.indexOf(base)) path = base + path;
-    var i = path.indexOf('?');
 
     this.canonicalPath = path;
     this.path = path.replace(base, '') || '/';
     if ('/' !== this.path[0]) this.path = '/' + this.path;
+
+    var i = this.path.indexOf('?');
 
     this.title = document.title;
     this.state = state || {};
