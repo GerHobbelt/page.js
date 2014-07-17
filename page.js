@@ -21,6 +21,12 @@
   var dispatch = true;
 
   /**
+   * Enable pushstate
+   */
+
+  var pushstate = true;
+
+  /**
    * Base path.
    */
 
@@ -105,6 +111,7 @@
     if (running) return;
     running = true;
     if (false === options.dispatch) dispatch = false;
+    if (false === options.pushstate) pushstate = false;
     if (false !== options.popstate) window.addEventListener('popstate', onpopstate, false);
     if (false !== options.click) window.addEventListener('click', onclick, false);
     if (!dispatch) return;
@@ -137,7 +144,7 @@
   page.show = function(path, state, dispatch){
     var ctx = new Context(path, state);
     if (false !== dispatch) page.dispatch(ctx);
-    if (!ctx.unhandled) ctx.pushState();
+    if (pushstate && !ctx.unhandled) ctx.pushState();
     return ctx;
   };
 
